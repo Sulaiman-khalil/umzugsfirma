@@ -1,4 +1,4 @@
-import "dotenv/config";
+import dotenv from "dotenv";
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import mongoose from "mongoose";
@@ -9,7 +9,7 @@ import { verifyToken } from "./middleware/auth";
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI!;
-
+dotenv.config();
 // MongoDB-Verbindung
 mongoose
   .connect(MONGO_URI)
