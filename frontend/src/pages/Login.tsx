@@ -51,7 +51,7 @@ export default function Login() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user, pass }),
       });
-      if (!res.ok) throw new Error("Login fehlgeschlagen");
+      if (!res.ok) throw new globalThis.Error("Login fehlgeschlagen");
       const { token } = await res.json();
       localStorage.setItem("token", token);
       navigate("/admin");

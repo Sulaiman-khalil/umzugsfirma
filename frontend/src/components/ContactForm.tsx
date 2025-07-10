@@ -58,7 +58,9 @@ export default function ContactForm() {
   const validate = () => {
     const result = ContactSchema.safeParse({ name, message: msg });
     if (!result.success) {
-      setError(result.error.errors.map((e) => e.message).join(", "));
+      // Direkt die .issues-Property verwenden
+      const messages = result.error.issues.map((issue) => issue.message);
+      setError(messages.join(", "));
       return false;
     }
     return true;

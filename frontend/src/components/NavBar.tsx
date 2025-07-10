@@ -1,6 +1,3 @@
-// frontend/src/components/NavBar.tsx
-
-import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 

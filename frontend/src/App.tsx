@@ -1,6 +1,3 @@
-// frontend/src/App.tsx
-
-import React from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import NavBar from "./components/NavBar";
@@ -20,7 +17,7 @@ export default function App() {
     <>
       <NavBar />
 
-      <AnimatePresence exitBeforeEnter initial={false}>
+      <AnimatePresence mode="wait" initial={false}>
         <motion.main
           key={location.pathname}
           initial={{ opacity: 0, y: 10 }}
