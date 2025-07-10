@@ -1,5 +1,3 @@
-// frontend/src/App.tsx
-
 import React from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
@@ -9,9 +7,7 @@ import Contact from "./pages/Contact";
 import NavBar from "./components/NavBar";
 
 const pageVariants = {
-  initial: { opacity: 0, y: 20 },
-  in: { opacity: 1, y: 0 },
-  out: { opacity: 0, y: -20 },
+  /* ... */
 };
 
 export default function App() {
@@ -20,7 +16,7 @@ export default function App() {
   return (
     <>
       <NavBar />
-      <AnimatePresence exitBeforeEnter initial={false}>
+      <AnimatePresence mode="wait">
         <motion.main
           key={location.pathname}
           initial="initial"
