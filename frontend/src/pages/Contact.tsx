@@ -1,10 +1,18 @@
-import { ContactForm } from "../components/ContactForm";
+// frontend/src/pages/Contact.tsx
 
-export default function ContactPage() {
+import React from "react";
+import styled from "styled-components";
+import ContactForm from "../components/ContactForm";
+
+const Title = styled.h1`
+  margin-bottom: ${({ theme }) => theme.spacing.large};
+`;
+
+export default function Contact() {
   return (
-    <main>
-      <h1>Kontakt</h1>
+    <section>
+      <Title>Kontakt</Title>
       <ContactForm />
-    </main>
+    </section>
   );
 }

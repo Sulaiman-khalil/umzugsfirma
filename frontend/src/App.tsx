@@ -1,9 +1,8 @@
+// frontend/src/App.tsx
+
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import styled, { ThemeProvider } from "styled-components";
-import { motion } from "framer-motion";
-import GlobalStyles from "./styles/globalStyles";
-import { theme } from "./styles/theme";
+import { Routes, Route, useLocation } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
 import Home from "./pages/Home";
 import Services from "./pages/Services";
 import Contact from "./pages/Contact";
@@ -15,66 +14,28 @@ const pageVariants = {
   out: { opacity: 0, y: -20 },
 };
 
-const App: React.FC = () => {
+export default function App() {
+  const location = useLocation();
+
   return (
-    <ThemeProvider theme={theme}>
-      <GlobalStyles />
-      <Router>
-        <NavBar />
-        <MainContent>
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <motion.div
-                  initial="initial"
-                  animate="in"
-                  exit="out"
-                  variants={pageVariants}
-                >
-                  <Home />
-                </motion.div>
-              }
-            />
-            <Route
-              path="/services"
-              element={
-                <motion.div
-                  initial="initial"
-                  animate="in"
-                  exit="out"
-                  variants={pageVariants}
-                >
-                  <Services />
-                </motion.div>
-              }
-            />
-            <Route
-              path="/contact"
-              element={
-                <motion.div
-                  initial="initial"
-                  animate="in"
-                  exit="out"
-                  variants={pageVariants}
-                >
-                  <Contact />
-                </motion.div>
-              }
-            />
+    <>
+      <NavBar />
+      <AnimatePresence exitBeforeEnter initial={false}>
+        <motion.main
+          key={location.pathname}
+          initial="initial"
+          animate="in"
+          exit="out"
+          variants={pageVariants}
+          style={{ padding: "2rem", maxWidth: 800, margin: "auto" }}
+        >
+          <Routes location={location}>
+            <Route path="/" element={<Home />} />
+            <Route path="/services" element={<Services />} />
+            <Route path="/contact" element={<Contact />} />
           </Routes>
-        </MainContent>
-      </Router>
-    </ThemeProvider>
+        </motion.main>
+      </AnimatePresence>
+    </>
   );
-};
-
-const MainContent = styled.main`
-  padding-top: 100px;
-  max-width: 1200px;
-  margin: auto;
-  width: 90%;
-  text-align: center;
-`;
-
-export default App;
+}

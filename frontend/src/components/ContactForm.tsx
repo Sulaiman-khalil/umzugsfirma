@@ -1,6 +1,7 @@
-// src/components/ContactForm.tsx
+// frontend/src/components/ContactForm.tsx
 
 import React, { useState } from "react";
+import styled from "styled-components";
 import { z } from "zod";
 
 const ContactSchema = z.object({
@@ -8,7 +9,46 @@ const ContactSchema = z.object({
   message: z.string().min(5, "Nachricht muss mindestens 5 Zeichen haben"),
 });
 
-export function ContactForm() {
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing.medium};
+  max-width: 500px;
+  margin: auto;
+`;
+
+const Input = styled.input`
+  padding: ${({ theme }) => theme.spacing.small};
+  border: 1px solid #ccc;
+  border-radius: 4px;
+`;
+
+const Textarea = styled.textarea`
+  padding: ${({ theme }) => theme.spacing.small};
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  resize: vertical;
+`;
+
+const Button = styled.button`
+  padding: ${({ theme }) => theme.spacing.medium};
+  background-color: ${({ theme }) => theme.colors.primary};
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+`;
+
+const Message = styled.p<{ $type: "success" | "error" }>`
+  color: ${({ $type, theme }) =>
+    $type === "success" ? theme.colors.success : theme.colors.error};
+`;
+
+export default function ContactForm() {
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState<
@@ -56,36 +96,31 @@ export function ContactForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label>
-        Dein Name
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          disabled={status === "loading"}
-          required
-        />
-      </label>
-
-      <label>
-        Deine Nachricht
-        <textarea
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          disabled={status === "loading"}
-          required
-        />
-      </label>
-
-      <button type="submit" disabled={status === "loading"}>
+    <Form onSubmit={handleSubmit}>
+      <Input
+        type="text"
+        placeholder="Dein Name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        disabled={status === "loading"}
+      />
+      <Textarea
+        placeholder="Deine Nachricht"
+        rows={5}
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        disabled={status === "loading"}
+      />
+      <Button type="submit" disabled={status === "loading"}>
         {status === "loading" ? "Sende…" : "Absenden"}
-      </button>
+      </Button>
 
       {status === "success" && (
-        <p className="success">Danke für deine Nachricht!</p>
+        <Message $type="success">Danke für deine Nachricht!</Message>
       )}
-      {status === "error" && <p className="error">Fehler: {errorMsg}</p>}
-    </form>
+      {status === "error" && (
+        <Message $type="error">Fehler: {errorMsg}</Message>
+      )}
+    </Form>
   );
 }
