@@ -1,5 +1,3 @@
-// frontend/src/pages/Admin.tsx
-
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
@@ -35,32 +33,50 @@ const Table = styled.table`
   }
 `;
 
+const DeleteButton = styled.button`
+  background: ${({ theme }) => theme.colors.error};
+  color: #fff;
+  border: none;
+  padding: ${({ theme }) => theme.spacing.small};
+  border-radius: 4px;
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.8;
+  }
+`;
+
 export default function Admin() {
   const [entries, setEntries] = useState<ContactEntry[]>([]);
   const apiUrl = import.meta.env.VITE_API_URL;
+  const token = localStorage.getItem("token");
 
-  useEffect(() => {
-    // Token aus localStorage holen
-    const token = localStorage.getItem("token");
-
-    // GET /kontakt mit Bearer-Token im Header
+  const fetchEntries = () => {
     fetch(`${apiUrl}/kontakt`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     })
-      .then(async (res) => {
-        if (!res.ok) {
-          const err = await res.json();
-          throw new Error(err.message || "Fehler beim Laden der Daten");
-        }
+      .then((res) => {
+        if (!res.ok) throw new Error("Fetch fehlgeschlagen");
         return res.json();
       })
-      .then((data: ContactEntry[]) => setEntries(data))
-      .catch((err) => console.error("Admin-Fetch-Error:", err));
-  }, [apiUrl]);
+      .then(setEntries)
+      .catch((err) => console.error(err));
+  };
+
+  useEffect(fetchEntries, [apiUrl, token]);
+
+  const handleDelete = async (id: string) => {
+    try {
+      const res = await fetch(`${apiUrl}/kontakt/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Löschen fehlgeschlagen");
+      fetchEntries(); // Liste neu laden
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <Container>
@@ -71,6 +87,7 @@ export default function Admin() {
             <th>Name</th>
             <th>Nachricht</th>
             <th>Datum</th>
+            <th>Aktion</th>
           </tr>
         </thead>
         <tbody>
@@ -79,6 +96,11 @@ export default function Admin() {
               <td>{e.name}</td>
               <td>{e.message}</td>
               <td>{new Date(e.createdAt).toLocaleString()}</td>
+              <td>
+                <DeleteButton onClick={() => handleDelete(e._id)}>
+                  Löschen
+                </DeleteButton>
+              </td>
             </tr>
           ))}
         </tbody>
