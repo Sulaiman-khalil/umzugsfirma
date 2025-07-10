@@ -1,25 +1,17 @@
-# Stage 1: Build
 FROM node:18-alpine AS builder
 WORKDIR /app
 
-# Nur package.json + lockfile kopieren, dann Dependencies installieren
+# Dependencies installieren
 COPY package.json package-lock.json ./
 RUN npm ci
 
-# Rest kopieren & bauen
+# Deinen Quellcode kopieren
 COPY . .
+
+# EXEC-Bit für tsc setzen
+RUN chmod +x ./node_modules/.bin/tsc
+
+# Jetzt läuft der Build durch
 RUN npm run build
 
-# Stage 2: Production
-FROM node:18-alpine
-WORKDIR /app
-
-# Prod-Dependencies
-COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
-
-# Gebauten Code übernehmen
-COPY --from=builder /app/dist ./dist
-
-EXPOSE 5000
-CMD ["node", "dist/index.js"]
+# … Rest deiner Multi-Stage-Konfiguration …
