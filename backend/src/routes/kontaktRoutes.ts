@@ -5,6 +5,17 @@ import { Contact } from "../models/Contact";
 
 const router = Router();
 
+// GET  /kontakt  → liefert alle Nachrichten (absteigend nach Datum)
+router.get("/", async (_req: Request, res: Response, next: NextFunction) => {
+  try {
+    const alleNachrichten = await Contact.find().sort({ createdAt: -1 });
+    res.json(alleNachrichten);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /kontakt → speichert eine neue Nachricht
 router.post("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { name, message } = req.body;

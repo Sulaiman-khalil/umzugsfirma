@@ -4,6 +4,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import Home from "./pages/Home";
 import Services from "./pages/Services";
 import Contact from "./pages/Contact";
+import Login from "./pages/Login";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Admin from "./pages/Admin";
 import NavBar from "./components/NavBar";
 
 const pageVariants = {
@@ -29,6 +32,15 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/services" element={<Services />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/login" element={<Login />} />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute>
+                  <Admin />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
         </motion.main>
       </AnimatePresence>

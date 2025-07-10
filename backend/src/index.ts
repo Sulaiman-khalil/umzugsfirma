@@ -4,12 +4,14 @@ import "dotenv/config";
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import mongoose from "mongoose";
+import authRoutes from "./routes/authRoutes";
 import kontaktRoutes from "./routes/kontaktRoutes";
+import { verifyToken } from "./middleware/auth";
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI!;
 
-// 1. MongoDB verbinden
+// 1. MongoDB-Verbindung
 mongoose
   .connect(MONGO_URI)
   .then(() => console.log("✅ MongoDB verbunden"))
@@ -24,22 +26,29 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 3. Health-Check-Route
-app.get("/", (req: Request, res: Response) => {
+// 3. Auth-Route für Login (gibt JWT aus)
+app.use("/auth", authRoutes);
+
+// 4. Kontakt-Routes: POST bleibt öffentlich, GET ist geschützt
+app.use(
+  "/kontakt",
+  (req: Request, res: Response, next: NextFunction) =>
+    req.method === "GET" ? verifyToken(req, res, next) : next(),
+  kontaktRoutes
+);
+
+// 5. Health-Check-Endpoint
+app.get("/", (_req: Request, res: Response) => {
   res.send("🚀 Umzugsfirma-API läuft!");
 });
 
-// 4. Kontakt-Route
-app.use("/kontakt", kontaktRoutes);
-
-// 5. Globaler Error-Handler
-//    _next statt next, typings für Request, Response, NextFunction
-app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
+// 6. Globaler Error-Handler
+app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
   console.error(err);
   res.status(500).json({ success: false, message: err.message });
 });
 
-// 6. Server starten
+// 7. Server starten
 app.listen(PORT, () => {
   console.log(`🚀 Server läuft auf http://localhost:${PORT}`);
 });
