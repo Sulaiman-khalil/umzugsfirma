@@ -1,17 +1,47 @@
-import express, { Express } from "express";
+// backend/src/index.ts
+
+import "dotenv/config";
+import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
-import bodyParser from "body-parser";
+import mongoose from "mongoose";
+import kontaktRoutes from "./routes/kontaktRoutes";
 
-const app: Express = express(); // Hier setzen wir die richtige Typisierung für `app`
+const PORT = process.env.PORT || 5000;
+const MONGO_URI = process.env.MONGO_URI!;
 
+// 1. MongoDB verbinden
+mongoose
+  .connect(MONGO_URI)
+  .then(() => console.log("✅ MongoDB verbunden"))
+  .catch((err) => {
+    console.error("❌ MongoDB-Verbindungsfehler:", err);
+    process.exit(1);
+  });
+
+const app = express();
+
+// 2. Middleware
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json());
 
-app.post("/kontakt", (req, res) => {
-  const { name, message } = req.body;
-  console.log(`Neue Nachricht von ${name}: ${message}`);
-
-  res.json({ success: true, message: "Danke für deine Nachricht!" });
+// 3. Health-Check-Route
+app.get("/", (req: Request, res: Response) => {
+  res.send("🚀 Umzugsfirma-API läuft!");
 });
 
-app.listen(5000, () => console.log("Backend läuft auf http://localhost:5000"));
+// 4. Kontakt-Route
+app.use("/kontakt", kontaktRoutes);
+
+// 5. Globaler Error-Handler
+//    _next statt next, typings für Request, Response, NextFunction
+app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
+  console.error(err);
+  res.status(500).json({ success: false, message: err.message });
+});
+
+// 6. Server starten
+app.listen(PORT, () => {
+  console.log(`🚀 Server läuft auf http://localhost:${PORT}`);
+});
+
+export default app;
