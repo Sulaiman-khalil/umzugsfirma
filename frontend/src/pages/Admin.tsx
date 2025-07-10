@@ -40,11 +40,27 @@ export default function Admin() {
   const apiUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    fetch(`${apiUrl}/kontakt`)
-      .then((res) => res.json())
-      .then(setEntries)
-      .catch((err) => console.error(err));
-  }, []);
+    // Token aus localStorage holen
+    const token = localStorage.getItem("token");
+
+    // GET /kontakt mit Bearer-Token im Header
+    fetch(`${apiUrl}/kontakt`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.message || "Fehler beim Laden der Daten");
+        }
+        return res.json();
+      })
+      .then((data: ContactEntry[]) => setEntries(data))
+      .catch((err) => console.error("Admin-Fetch-Error:", err));
+  }, [apiUrl]);
 
   return (
     <Container>

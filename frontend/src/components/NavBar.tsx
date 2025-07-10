@@ -4,6 +4,7 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import styled from "styled-components";
 
+// 1) Container
 const Nav = styled.nav`
   display: flex;
   gap: 1rem;
@@ -12,6 +13,7 @@ const Nav = styled.nav`
   align-items: center;
 `;
 
+// 2) Navigations-Links
 const NavLink = styled(Link)<{ $active?: boolean }>`
   color: ${({ $active, theme }) =>
     $active ? theme.colors.primary : theme.colors.text};
@@ -38,9 +40,10 @@ const NavLink = styled(Link)<{ $active?: boolean }>`
   `}
 `;
 
+// 3) Logout-Button
 const LogoutButton = styled.button`
   margin-left: auto;
-  padding: 0.5rem 1rem;
+  padding: ${({ theme }) => theme.spacing.small};
   background: ${({ theme }) => theme.colors.error};
   color: #fff;
   border: none;
